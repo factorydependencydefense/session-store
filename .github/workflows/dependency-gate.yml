@@ -6,11 +6,12 @@ name: dependency-gate
 # editing fleet/shared/.github/workflows/dependency-gate.yml in the kit after running
 # tools/publish-gate.ts, never by moving a tag.
 
+# Deliberately not filtered by paths. The org ruleset requires this check, and a
+# path-filtered workflow never reports on a pull request that misses the filter, which
+# would leave that pull request blocked forever. With no lockfile change there is nothing
+# to judge and the gate passes in seconds.
 on:
   pull_request_target:
-    paths:
-      - package.json
-      - package-lock.json
 
 permissions: {}
 
