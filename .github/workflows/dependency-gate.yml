@@ -1,0 +1,21 @@
+name: dependency-gate
+
+# pull_request_target runs this file from the default branch, never the pull request's
+# version, so a pull request cannot disable the check that judges it (SPEC Decision 15).
+# The gate's code lives in another repo and is pinned to a full commit SHA. Re-pin by
+# editing fleet/shared/.github/workflows/dependency-gate.yml in the kit after running
+# tools/publish-gate.ts, never by moving a tag.
+
+on:
+  pull_request_target:
+    paths:
+      - package.json
+      - package-lock.json
+
+permissions: {}
+
+jobs:
+  gate:
+    uses: factorydependencydefense/dependency-gate/.github/workflows/dependency-gate.yml@49f699b7b5c61189ef096c706c5bfb56ba33e1d2
+    permissions:
+      contents: read

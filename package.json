@@ -10,9 +10,11 @@
   "main": "src/index.js",
   "scripts": {
     "build": "esbuild src/index.js --bundle --platform=node --packages=external --outfile=dist/index.js",
-    "test": "node --test \"test/**/*.test.js\""
+    "test": "node --test \"test/*.test.js\"",
+    "test:security": "node --test \"test/security/**/*.test.js\""
   },
   "dependencies": {
+    "jsonwebtoken": "8.5.1",
     "lodash": "4.17.10",
     "request": "2.88.2",
     "uuid": "14.0.3"

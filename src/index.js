@@ -2,6 +2,8 @@ import isEqual from 'lodash/isEqual.js';
 import omit from 'lodash/omit.js';
 import uniq from 'lodash/uniq.js';
 
+export { keyForKid, resumeSession } from './tokens.js';
+
 const PRIVATE_FIELDS = ['csrfSecret', 'refreshToken'];
 
 export function createStore(now = () => Date.now()) {
