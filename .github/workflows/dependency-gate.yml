@@ -17,6 +17,6 @@ permissions: {}
 
 jobs:
   gate:
-    uses: factorydependencydefense/dependency-gate/.github/workflows/dependency-gate.yml@49f699b7b5c61189ef096c706c5bfb56ba33e1d2
+    uses: factorydependencydefense/dependency-gate/.github/workflows/dependency-gate.yml@d807d9e97ac36346401ebcc3848d8649f75ff11e
     permissions:
       contents: read
