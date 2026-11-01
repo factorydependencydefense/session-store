@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "jsonwebtoken": "8.5.1",
-    "lodash": "4.17.10",
+    "lodash": "4.18.1",
     "request": "2.88.2",
     "uuid": "14.0.3"
   },
