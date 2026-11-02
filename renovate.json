@@ -1,0 +1,11 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "description": "New releases are held for 7 days so a compromised publish is caught upstream before it lands here. To bypass in an emergency, a human adds a packageRules entry scoped to that one package with minimumReleaseAge set to null, merges it, and reverts the entry once the upgrade is in.",
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "minimumReleaseAge": null
+  }
+}
