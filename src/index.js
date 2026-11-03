@@ -1,6 +1,6 @@
-import isEqual from 'lodash/isEqual.js';
-import omit from 'lodash/omit.js';
-import uniq from 'lodash/uniq.js';
+import isEqual from '@factorydependencydefense/lodash-lite/isEqual.js';
+import omit from '@factorydependencydefense/lodash-lite/omit.js';
+import uniq from '@factorydependencydefense/lodash-lite/uniq.js';
 
 export { keyForKid, resumeSession, signSession } from './tokens.js';
 
