@@ -1,5 +1,5 @@
 // These assertions pinned the alg:none signature bypass of jsonwebtoken 8.5.1 and were inverted
-// when GHSA-qwph-4952-7xr6 was fixed by the upgrade to jsonwebtoken 9.0.3.
+// when GHSA-hjrf-2m68-5959 and GHSA-qwph-4952-7xr6 were fixed by the upgrade to jsonwebtoken 9.0.3.
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import jwt from 'jsonwebtoken';
