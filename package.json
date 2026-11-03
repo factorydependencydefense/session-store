@@ -14,7 +14,7 @@
     "test:security": "node --test \"test/security/**/*.test.js\""
   },
   "dependencies": {
-    "jsonwebtoken": "8.5.1",
+    "jsonwebtoken": "9.0.3",
     "lodash": "4.17.10",
     "request": "2.88.2",
     "uuid": "14.0.3"

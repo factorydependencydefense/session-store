@@ -1,6 +1,8 @@
-// These assertions pin today's vulnerable behaviour and are expected to be inverted by the remediation PR.
+// These assertions pinned the alg:none signature bypass of jsonwebtoken 8.5.1 and were inverted
+// when GHSA-qwph-4952-7xr6 was fixed by the upgrade to jsonwebtoken 9.0.3.
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import jwt from 'jsonwebtoken';
 import { createStore, resumeSession } from '../src/index.js';
 
 function algNoneToken(kid, payload) {
@@ -19,10 +21,13 @@ async function withKeys(fn) {
   }
 }
 
-test('vulnerable today: resumeSession accepts an alg:none token whose kid is unknown', async () => {
+test('secure now: resumeSession rejects an alg:none token whose kid is unknown', async () => {
   await withKeys(() => {
     const store = createStore();
     store.put('s1', { userId: 'u1' });
-    assert.deepEqual(resumeSession(store, algNoneToken('attacker-kid', { sid: 's1' })), { userId: 'u1' });
+    assert.throws(
+      () => resumeSession(store, algNoneToken('attacker-kid', { sid: 's1' })),
+      jwt.JsonWebTokenError,
+    );
   });
 });
