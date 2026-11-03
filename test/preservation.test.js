@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import jwt from 'jsonwebtoken';
-import { createStore, keyForKid, resumeSession } from '../src/index.js';
+import { createStore, keyForKid, resumeSession, signSession } from '../src/index.js';
 
 const KEYS = { k1: 'session-key-one', k2: 'session-key-two' };
 
@@ -65,4 +65,11 @@ test('resumeSession rejects input that is not a jwt', async () => {
   await withKeys(() => {
     assert.throws(() => resumeSession(createStore(), 'not-a-jwt'), /not a jwt/);
   });
+});
+
+test('signSession and resumeSession round-trip through the real RS256 code path', () => {
+  const store = createStore();
+  store.put('s1', { userId: 'u1' });
+  const token = signSession({ sid: 's1' });
+  assert.deepEqual(resumeSession(store, token), { userId: 'u1' });
 });
