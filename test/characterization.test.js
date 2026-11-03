@@ -1,4 +1,4 @@
-// These assertions pin today's vulnerable behaviour and are expected to be inverted by the remediation PR.
+// These assertions pin the behaviour of the jsonwebtoken 9.x key-size and algorithm checks.
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import test from 'node:test';
@@ -36,23 +36,32 @@ function withRsaKeys(privatePem, publicPem, fn) {
   }
 }
 
-test('vulnerable today: resumeSession accepts an alg:none token whose kid is unknown', async () => {
+test('secure now: resumeSession rejects an alg:none token whose kid is unknown', async () => {
   await withKeys(() => {
     const store = createStore();
     store.put('s1', { userId: 'u1' });
-    assert.deepEqual(resumeSession(store, algNoneToken('attacker-kid', { sid: 's1' })), { userId: 'u1' });
+    assert.throws(
+      () => resumeSession(store, algNoneToken('attacker-kid', { sid: 's1' })),
+      jwt.JsonWebTokenError,
+    );
   });
 });
 
-test('vulnerable today: resumeSession accepts an RS256 token signed with a 1024-bit RSA key', () => {
+test('secure now: resumeSession rejects an RS256 token signed with a 1024-bit RSA key', () => {
   const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 1024 });
   const privatePem = privateKey.export({ type: 'pkcs8', format: 'pem' });
   const publicPem = publicKey.export({ type: 'spki', format: 'pem' });
 
   withRsaKeys(privatePem, publicPem, () => {
-    const token = jwt.sign({ sid: 's1' }, privatePem, { algorithm: 'RS256' });
+    let token;
+    try {
+      token = jwt.sign({ sid: 's1' }, privatePem, { algorithm: 'RS256' });
+    } catch (error) {
+      assert.match(error.message, /minimum key size/i);
+      return;
+    }
     const store = createStore();
     store.put('s1', { userId: 'u1' });
-    assert.deepEqual(resumeSession(store, token), { userId: 'u1' });
+    assert.throws(() => resumeSession(store, token), /minimum key size/i);
   });
 });
