@@ -52,9 +52,9 @@ test('resumeSession rejects an RS256 token signed with a 1024-bit RSA key', () =
     let token;
     try {
       token = jwt.sign({ sid: 's1' }, privatePem, { algorithm: 'RS256' });
-    } catch {
-      // jsonwebtoken 9.x rejects 1024-bit keys at sign time — the attack
-      // cannot even create a token, which is stronger than verify-side rejection.
+    } catch (e) {
+      // Pass only on the specific key-size rejection, not any sign error.
+      assert.match(e.message, /minimum key size|key size/i);
       return;
     }
     const store = createStore();
