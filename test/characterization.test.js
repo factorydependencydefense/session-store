@@ -1,9 +1,9 @@
-// These assertions pin today's vulnerable behaviour and are expected to be inverted by the remediation PR.
+// These assertions pinned the vulnerable behaviour and were inverted by the jsonwebtoken 9 upgrade.
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import test from 'node:test';
 import jwt from 'jsonwebtoken';
-import { createStore, resumeSession } from '../src/index.js';
+import { createStore, resumeSession, signSession } from '../src/index.js';
 
 function algNoneToken(kid, payload) {
   const part = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
@@ -36,23 +36,24 @@ function withRsaKeys(privatePem, publicPem, fn) {
   }
 }
 
-test('vulnerable today: resumeSession accepts an alg:none token whose kid is unknown', async () => {
+test('secure now: resumeSession rejects an alg:none token whose kid is unknown', async () => {
   await withKeys(() => {
     const store = createStore();
     store.put('s1', { userId: 'u1' });
-    assert.deepEqual(resumeSession(store, algNoneToken('attacker-kid', { sid: 's1' })), { userId: 'u1' });
+    assert.throws(
+      () => resumeSession(store, algNoneToken('attacker-kid', { sid: 's1' })),
+      jwt.JsonWebTokenError,
+    );
   });
 });
 
-test('vulnerable today: resumeSession accepts an RS256 token signed with a 1024-bit RSA key', () => {
+test('secure now: a 1024-bit RSA key is rejected when minting an RS256 session token', () => {
   const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 1024 });
   const privatePem = privateKey.export({ type: 'pkcs8', format: 'pem' });
   const publicPem = publicKey.export({ type: 'spki', format: 'pem' });
 
   withRsaKeys(privatePem, publicPem, () => {
-    const token = jwt.sign({ sid: 's1' }, privatePem, { algorithm: 'RS256' });
-    const store = createStore();
-    store.put('s1', { userId: 'u1' });
-    assert.deepEqual(resumeSession(store, token), { userId: 'u1' });
+    assert.throws(() => jwt.sign({ sid: 's1' }, privatePem, { algorithm: 'RS256' }), /minimum key size of 2048 bits/);
+    assert.throws(() => signSession({ sid: 's1' }), /minimum key size of 2048 bits/);
   });
 });
