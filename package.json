@@ -15,9 +15,7 @@
   },
   "dependencies": {
     "jsonwebtoken": "^8.5.1",
-    "lodash": "4.17.10",
-    "request": "2.88.2",
-    "uuid": "14.0.3"
+    "lodash": "4.17.10"
   },
   "devDependencies": {
     "esbuild": "0.28.2"
