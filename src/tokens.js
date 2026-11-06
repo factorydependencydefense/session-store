@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'node:crypto';
 
-// Legacy 1024-bit RSA key pair for RS256 session tokens.
-// jsonwebtoken 9.x enforces a minimum key size of 2048 bits for RSA keys.
-const defaultKeyPair = crypto.generateKeyPairSync('rsa', { modulusLength: 1024 });
+// RSA key pair for RS256 session tokens. 2048 bits is the minimum jsonwebtoken accepts.
+const defaultKeyPair = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
 const DEFAULT_PRIVATE_PEM = defaultKeyPair.privateKey.export({ type: 'pkcs8', format: 'pem' });
 const DEFAULT_PUBLIC_PEM = defaultKeyPair.publicKey.export({ type: 'spki', format: 'pem' });
 
@@ -38,6 +37,6 @@ export function resumeSession(store, token) {
     return store.get(claims.sid);
   }
 
-  const claims = jwt.verify(token, keyForKid(decoded.header.kid));
+  const claims = jwt.verify(token, keyForKid(decoded.header.kid), { algorithms: ['HS256'] });
   return store.get(claims.sid);
 }
